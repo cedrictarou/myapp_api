@@ -2,7 +2,15 @@ ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 require 'rails/test_help'
 
-class ActiveSupport::TestCase
+# gem miunitest-reporters setup
+require 'minitest/reporters'
+Minitest::Reporters.use!
+
+class ActiveSupport::TestCase # rubocop:disable Style/ClassAndModuleChildren
+  # プロセスが分岐した直後に呼び出す
+  parallelize_setup do |_worker|
+    load "#{Rails.root}/db/seeds.rb"
+  end
   # Run tests in parallel with specified workers
   parallelize(workers: :number_of_processors)
 
