@@ -7,6 +7,6 @@ class EmailValidator < ActiveModel::EachValidator
     format = /\A\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*\z/
     record.errors.add(attribute, :invalid) unless format =~ value
     # uniqueness
-    record.errors.add(attribute, :taken) if record.email_by_activated?
+    record.errors.add(attribute, :taken) if record.email_activated?
   end
 end
