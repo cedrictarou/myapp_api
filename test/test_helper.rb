@@ -2,18 +2,15 @@ ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 require 'rails/test_help'
 
-# 追加
 # gem 'minitest-reporters' setup
 require 'minitest/reporters'
 Minitest::Reporters.use!
-# ここまで
 
 class ActiveSupport::TestCase # rubocop:disable Style/ClassAndModuleChildren
   # プロセスが分岐した直後に呼び出す
   parallelize_setup do |worker| # rubocop:disable Lint/UnusedBlockArgument
     load "#{Rails.root}/db/seeds.rb"
   end
-  # ここまで
   # Run tests in parallel with specified workers
   parallelize(workers: :number_of_processors)
 
@@ -22,5 +19,28 @@ class ActiveSupport::TestCase # rubocop:disable Style/ClassAndModuleChildren
     User.find_by(activated: true)
   end
 
-  # Add more helper methods to be used by all tests here...
+  # api path
+  def api(path = '/')
+    "/api/v1#{path}"
+  end
+
+  # 認可ヘッダ
+  def auth(token)
+    { Authorization: "Bearer #{token}" }
+  end
+
+  # 引数のparamsでログインを行う
+  def login(params)
+    post api('/auth_token'), xhr: true, params: params
+  end
+
+  # ログアウトapi
+  def logout
+    delete api('/auth_token'), xhr: true
+  end
+
+  # レスポンスJSONをハッシュで返す
+  def res_body
+    JSON.parse(@response.body)
+  end
 end
